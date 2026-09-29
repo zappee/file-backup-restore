@@ -46,6 +46,6 @@ do_backup " 4/9" graphics delete-during
 do_backup " 5/9" learning delete-during
 #do_backup " 6/9" music delete-during
 do_backup "7/9" photo-album delete-during
-#do_backup "8/9" softwares keep
+#do_backup "8/9" software keep
 #do_backup "9/9" videos keep
 printf -- "-- END --\n"

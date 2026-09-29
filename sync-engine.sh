@@ -2,10 +2,12 @@
 
 # ##############################################################################
 # The Remal File Backup Tool copies new/modifies files from the source
-#  directory to the target directory usiny rsync.
+#  directory to the target directory using rsync.
 #
 # Release: 0.3.9
 # Created by arnold.somogyi@gmail.com
+#
+# Copyright (c) 2020-2026 Remal Software and Arnold Somogyi All rights reserved\n
 #
 # sync-engine.sh <source-directory> <target-directory> [delete-during|delete-before]
 #
@@ -76,7 +78,7 @@ function show_help() {
   script_file_name="${0##*/}"
 
   printf "%bRemal Backup Tool.%b\n" "$COLOR_YELLOW" "$STYLE_DEFAULT"
-  printf "   File backup tool that copies new/modifid files from the source directory to\n"
+  printf "   File backup tool that copies new/modified files from the source directory to\n"
   printf "   the target directory using rsync.\n\n"
 
   printf "%bUsage:%b\n" "$STYLE_BOLD" "$STYLE_DEFAULT"
@@ -86,17 +88,17 @@ function show_help() {
   printf "   mode (optional):\n"
   printf "      %bkeep (default)%b: do not delete files from the target/backup directory\n" "$STYLE_BOLD" "$STYLE_DEFAULT"
   printf "      %bdelete-before%b:  deleting before the transfer is helpful if the\n" "$STYLE_BOLD" "$STYLE_DEFAULT"
-  printf "                         filesystem is tight for space\n" "$STYLE_BOLD" "$STYLE_DEFAULT"
+  printf "                         %bfilesystem is tight for space%b\n" "$STYLE_BOLD" "$STYLE_DEFAULT"
   printf "      %bdelete-during%b:  deletes files during the backup, not before, more temporary\n" "$STYLE_BOLD" "$STYLE_DEFAULT"
-  printf "                         disk space is required on the backup disk\n" "$STYLE_BOLD" "$STYLE_DEFAULT"
+  printf "                         %bdisk space is required on the backup disk%b\n" "$STYLE_BOLD" "$STYLE_DEFAULT"
 
   printf "%bExamples:%b\n" "$STYLE_BOLD" "$STYLE_DEFAULT"
   printf "   %s ~/workspace ~/temp/hdd-1/\n" "$script_file_name"
   printf "   %s ~/workspace ~/temp/hdd-1/ delete-before\n" "$script_file_name"
   printf "\n"
   printf "Contact: arnold.somogyi@gmail.com\n"
-  printf "Copyright (c) 2020-2024 Remal Software and Arnold Somogyi All rights reserved\n"
-  exit 0
+  printf "Copyright (c) 2020-2026 Remal Software and Arnold Somogyi All rights reserved\n"
+  exit 1
 }
 
 # ------------------------------------------------------------------------------
@@ -147,7 +149,7 @@ function do_backup() {
 
   show_params "$source_dir" "$target_dir" "$mode" "$command $dry_run $endpoints"
   while true; do
-    read -p "$(echo -e $COLOR_RED"Comparing the SUORCE and TARGET directories and show the diccerence. Continue? [y/n]"$STYLE_DEFAULT" ")" yn
+    read -p "$(echo -e $COLOR_RED"Comparing the SOURCE and TARGET directories and show the difference. Continue? [y/n]$STYLE_DEFAULT ")" yn
     case $yn in
         [Yy]* ) eval "$command $dry_run $endpoints"; break;;
         [Nn]* ) exit;;
@@ -159,7 +161,7 @@ function do_backup() {
   while true; do
     printf "%bDo you want to copy files from SOURCE to TARGET?%b\n" "$COLOR_RED" "$STYLE_DEFAULT"
     printf "%bFiles on TARGET media will be overwritten!%b\n" "$COLOR_RED" "$STYLE_DEFAULT"
-    read -p "$(echo -e $COLOR_RED"Continue [y/n]"$STYLE_DEFAULT" ")" yn
+    read -p "$(echo -e $COLOR_RED"Continue [y/n]$STYLE_DEFAULT ")" yn
     case $yn in
         [Yy]* ) eval "$command $endpoints"; break;;
         [Nn]* ) exit;;
@@ -176,28 +178,33 @@ function do_backup() {
 #    param-3: mode can be 'before' or 'during'
 # ------------------------------------------------------------------------------
 function validate_user_input() {
-  local not_defined source_dir target_dir mode
-  not_defined="na"
+  local source_dir target_dir mode
   source_dir="$1"
   target_dir="$2"
   mode="$3"
 
-  if [ "$source_dir" == "$not_defined" ] || [ "$target_dir" == "$not_defined" ]; then
-    show_help
+  local error_message_style default_text_color
+  error_message_style="\033[38;5;196;48;5;16m"
+  default_text_color="\033[0m"
+
+  if ! [ -x "$(command -v rsync)" ]; then
+    printf "%bRsync is not installed.%b\n" "$error_message_style" "$default_text_color"
+    exit 1
   fi
 
   if [ ! -d "$source_dir" ]; then
+    printf "%bSource directory not found: %s%b\n" "$error_message_style" "$source_dir" "$default_text_color"
     show_help
   fi
 
+  if [ ! -d "$target_dir" ]; then
+    printf "%bTarget directory not found: %s%b\n" "$error_message_style" "$target_dir" "$default_text_color"
+    show_help
+  fi
 
   if [ "$mode" != "delete-before" ] && [ "$mode" != "delete-during" ] && [ "$mode" != "keep" ]; then
+    printf "%bThe specified mode is not recognized: %s%b\n" "$error_message_style" "$mode" "$default_text_color"
     show_help
-  fi
-
-  if ! [ -x "$(command -v rsync)" ]; then
-    printf "Error: rsync is not installed.\n"
-    exit 1
   fi
 }
 

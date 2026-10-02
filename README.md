@@ -4,6 +4,10 @@
 ![GitHub Issues](https://img.shields.io/github/issues/zappee/file-backup-restore)
 ![GitHub Release](https://img.shields.io/github/v/release/zappee/file-backup-restore)
 
+#### ⭐⭐ Like this project? Support my work by giving it a star on [GitHub](https://github.com/zappee/file-backup-restore/) ⭐⭐
+
+![GitHub Repo stars](https://img.shields.io/github/stars/zappee/file-backup-restore?style=flat)
+
 ### 1) Overview
 A simple, secure, and interactive file copy and backup tool to back up and restore files especially for laptops.
 If you use external USB hard drives or flash drives to back up your personal files, documents, and photos, this tool makes the process effortless.
